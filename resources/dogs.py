@@ -26,8 +26,7 @@ def create_dog():
     payload = request.get_json() # this is like req.body in express
     print(payload) # you should see request body in your terminal :)
 
-    new_dog = models.Dog.create(name=payload['name'], breed=payload['breed'], age=payload['age'],
-    weight=payload['weight'], additionalComments=payload['additionalComments'])
+    new_dog = models.Dog.create(name=payload['name'], breed=payload['breed'], age=payload['age'], weight=payload['weight'], additionalComments=payload['additionalComments'])
     print(new_dog)
     dog_dict = model_to_dict(new_dog)
 
