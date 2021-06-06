@@ -119,10 +119,10 @@ def user():
 # this is like app.listen() in express -- it goes at the bottom
 # __name__ being '__main___' here means we just ran this file from the command line
 # as opposed to exporting it and importing it somewhere else
-if __name__ == '__main__':
-    # when we start the app, set up out DB/tables as defined in models.property
-    models.initialize() # remember in express we required the db before we did app.listen
-    app.run(debug=DEBUG, port=PORT)
+# if __name__ == '__main__':
+#     # when we start the app, set up out DB/tables as defined in models.property
+#     models.initialize() # remember in express we required the db before we did app.listen
+#     app.run(debug=DEBUG, port=PORT)
 
 if os.environ.get('FLASK_ENV') != 'development':
   print('\non heroku!')
