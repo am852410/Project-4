@@ -74,12 +74,12 @@ def login_code(cell_phone):
 def login():
     payload = request.get_json() #getting the body from frontend fetch
     user = models.User.select().where(models.User.cellPhone==payload['cellPhone']).first() #checking the database for the User model
-    user_dict = model_to_dict(user)
-    if user_dict: #checking if the user was found.
-         new_auth_code = login_code(payload['cellPhone'])
-         user_dict["authCode"] = new_auth_code
-         models.User.update(authCode=new_auth_code).where(models.User.cellPhone==payload['cellPhone']).execute()
-         return jsonify(
+    if user: #checking if the user was found.
+        user_dict = model_to_dict(user)
+        new_auth_code = login_code(payload['cellPhone'])
+        user_dict["authCode"] = new_auth_code
+        models.User.update(authCode=new_auth_code).where(models.User.cellPhone==payload['cellPhone']).execute()
+        return jsonify(
              data=user_dict,
              message='Successfully texted user',
              status=201
