@@ -12,6 +12,7 @@ import os
 from dotenv import load_dotenv
 from resources.dogs import dogs
 from resources.users import users
+from resources.login import login
 
 load_dotenv() # takes the environment variables from .env
 
@@ -21,6 +22,7 @@ PORT=8000
 # this is analogous to: const app = express()
 app = Flask(__name__) # instantiating the Flask class to create an app
 
+CORS(login, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
 CORS(dogs, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
 CORS(users, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
 CORS(app, origins=['*'])
@@ -28,6 +30,7 @@ CORS(app, origins=['*'])
 
 app.register_blueprint(dogs, url_prefix='/dogs')# analogous to app.use('/dogs', dogController)
 app.register_blueprint(users, url_prefix='/users')# analogous to app.use('/users', userController)
+app.register_blueprint(login, url_prefix='/login')# analogous to app.use('/users', userController)
 
 @app.before_request # use this decorator to cause a function to run before reqs
 def before_request():
