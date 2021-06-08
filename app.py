@@ -21,9 +21,9 @@ PORT=8000
 # this is analogous to: const app = express()
 app = Flask(__name__) # instantiating the Flask class to create an app
 
-CORS(dogs, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
-CORS(app, origins=['*'], supports_credentials=True)
+# CORS(dogs, origins=['http://localhost:3000'], supports_credentials=True)
+# CORS(users, origins=['http://localhost:3000'], supports_credentials=True)
+CORS(app, origins=['*'])
 
 
 app.register_blueprint(dogs, url_prefix='/dogs')# analogous to app.use('/dogs', dogController)
@@ -43,34 +43,6 @@ def before_request():
         models.DATABASE.close()
         return response # go ahead and send response back to client
                       # (in our case this will be some JSON)
-
-
-@app.route('/') # @ symbol here means this is a decorator
-def hello():
-    return 'Hello, world!'
-
-
-# Find your Account SID and Auth Token at twilio.com/console
-# and set the environment variables. See http://twil.io/secure
-def login_code(cell_phone):
-    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
-    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
-    client = Client(account_sid, auth_token)
-
-
-    random_authcode = []
-    for i in range(0,5):
-        n = random.randint(0,9)
-        random_authcode.append(str(n))
-
-    random_authcode_string = "".join(random_authcode)
-    message = client.messages \
-                .create(
-                     body=f"Hello! This is Tony Mendoza your fellow dog walker! Your authentication code is {random_authcode_string}",
-                     from_='+16194863151',
-                     to=f"+1{cell_phone}"
-                 )
-
 
 
 # configure the LoginManager. according the this:
@@ -93,37 +65,17 @@ login_manager.init_app(app)
 def load_user(user_id):
     user = models.User.get(models.User.id == user_id)
     user['auth_code'] = new_auth_code
-    DATABASE.commit()
-
-# @app.route('/login', methods=["GET","POST"])
-# def login_page():
-#
-#     error = ''
-#     attempted_random_authcode = request.form['random_authcode']
-#     try:
-#         user = models.User.get(models.User.cell_phone == payload['cell_phone'])
-#         if request.method == "POST":
-#            attempted_cellphone = request.form['cell_phone']
-#            return login_code(attempted_cellphone)
-#         else:
-#             error = "Invalid credentials. Try Again."
-#             return None
-
-@app.route('/user')
-def user():
-    if 'cell_phone' in session:
-        return 'Logged in as %s' % escape(session['cell_phone'])
-    return 'You are not logged in'
+    models.DATABASE.commit()
 
 
 # this is like app.listen() in express -- it goes at the bottom
 # __name__ being '__main___' here means we just ran this file from the command line
 # as opposed to exporting it and importing it somewhere else
-# if __name__ == '__main__':
-#     # when we start the app, set up out DB/tables as defined in models.property
-#     models.initialize() # remember in express we required the db before we did app.listen
-#     app.run(debug=DEBUG, port=PORT)
+if __name__ == '__main__':
+    # when we start the app, set up out DB/tables as defined in models.property
+    models.initialize() # remember in express we required the db before we did app.listen
+    app.run(debug=DEBUG, port=PORT)
 
-if os.environ.get('FLASK_ENV') != 'development':
-  print('\non heroku!')
-  models.initialize()
+# if os.environ.get('FLASK_ENV') != 'development':
+#   print('\non heroku!')
+#   models.initialize()

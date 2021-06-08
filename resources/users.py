@@ -1,7 +1,11 @@
 import models
+import os
+from dotenv import load_dotenv
 from flask import Blueprint, request, jsonify
 # from flask_cors import CORS, cross_origin
 from playhouse.shortcuts import model_to_dict
+from twilio.rest import Client
+import random
 
 users = Blueprint('users', 'users')
 
@@ -24,9 +28,6 @@ def get_all_users():
     # @cross_origin()
 @users.route('', methods=['POST'])
 def create_user():
-    print("hitting the function")
-    print(request)
-    print(request.get_json())
     # .get_json() attached to request will extract JSON from the request body
     payload = request.get_json() # this is like req.body in express
     print(payload) # you should see request body in your terminal :)
@@ -45,3 +46,41 @@ def create_user():
 @users.route('', methods=['GET'])
 def get_one_user():
     print("result of individual user query")
+
+
+# Find your Account SID and Auth Token at twilio.com/console
+# and set the environment variables. See http://twil.io/secure
+def login_code(cell_phone):
+    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+    client = Client(account_sid, auth_token)
+
+
+    random_authcode = []
+    for i in range(0,5): #[0,1,2,3,4]
+        n = random.randint(0,9)
+        random_authcode.append(str(n))
+
+    random_authcode_string = "".join(random_authcode)
+    message = client.messages \
+                .create(
+                     body=f"Hello! This is Tony Mendoza your fellow dog walker! Your authentication code is {random_authcode_string}",
+                     from_='+16194863151',
+                     to=f"+1{cell_phone}"
+                 )
+    return random_authcode_string
+
+@users.route('/login', methods=['POST'])
+def login():
+    payload = request.get_json() #getting the body from frontend fetch
+    user = models.User.select().where(models.User.cellPhone==payload['cellPhone']).first() #checking the database for the User model
+    user_dict = model_to_dict(user)
+    if user_dict: #checking if the user was found.
+         new_auth_code = login_code(payload['cellPhone'])
+         user_dict["authCode"] = new_auth_code
+         models.User.update(authCode=new_auth_code).where(models.User.cellPhone==payload['cellPhone']).execute()
+         return jsonify(
+             data=user_dict,
+             message='Successfully texted user',
+             status=201
+         ), 201
