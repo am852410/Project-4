@@ -6,8 +6,8 @@ from flask import Blueprint, request, jsonify
 from playhouse.shortcuts import model_to_dict
 from twilio.rest import Client
 import random
-login = Blueprint('login', 'login')
 
+login = Blueprint('login', 'login')
 
 def login_code(cell_phone):
     account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
@@ -29,10 +29,10 @@ def login_code(cell_phone):
                  )
     return random_authcode_string
 
-@users.route('', methods=['POST'])
+@login.route('', methods=['POST'])
 def login():
     payload = request.get_json() #getting the body from frontend fetch
-    user_matches = models.User.select().where(models.User.cellPhone **f'%{payload['cellPhone']}%') #checking the database for the User model
+    user_matches = models.User.select().where(models.User.cellPhone ** f"%{payload['cellPhone']}%") #checking the database for the User model
     user_matches_arr = [model_to_dict(user) for user in user_matches]
     user_dict = user_matches_arr[0]
     if user_dict: #checking if the user was found.

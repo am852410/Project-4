@@ -23,14 +23,14 @@ PORT=8000
 app = Flask(__name__) # instantiating the Flask class to create an app
 
 # CORS(login, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
-# CORS(dogs, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
-# CORS(users, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
-CORS(app, origins=['*'])
+CORS(dogs, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
+CORS(users, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
+# CORS(app, origins=['*'])
 
 
 app.register_blueprint(dogs, url_prefix='/dogs')# analogous to app.use('/dogs', dogController)
 app.register_blueprint(users, url_prefix='/users')# analogous to app.use('/users', userController)
-app.register_blueprint(login, url_prefix='/login')# analogous to app.use('/users', userController)
+# app.register_blueprint(login, url_prefix='/login')# analogous to app.use('/users', userController)
 
 @app.before_request # use this decorator to cause a function to run before reqs
 def before_request():
@@ -74,11 +74,12 @@ def load_user(user_id):
 # this is like app.listen() in express -- it goes at the bottom
 # __name__ being '__main___' here means we just ran this file from the command line
 # as opposed to exporting it and importing it somewhere else
-# if __name__ == '__main__':
-#     # when we start the app, set up out DB/tables as defined in models.property
-#     models.initialize() # remember in express we required the db before we did app.listen
-#     app.run(debug=DEBUG, port=PORT)
 
 if os.environ.get('FLASK_ENV') != 'development':
   print('\non heroku!')
   models.initialize()
+
+if __name__ == '__main__':
+  # when we start the app, set up out DB/tables as defined in models.property
+  models.initialize() # remember in express we required the db before we did app.listen
+  app.run(debug=DEBUG, port=PORT)
