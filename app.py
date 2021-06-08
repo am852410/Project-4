@@ -22,9 +22,9 @@ PORT=8000
 # this is analogous to: const app = express()
 app = Flask(__name__) # instantiating the Flask class to create an app
 
-CORS(login, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
-CORS(dogs, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
-CORS(users, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
+# CORS(login, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
+# CORS(dogs, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
+# CORS(users, origins=['https://peacemakerdogwalkingcompany.herokuapp.com'], supports_credentials=True)
 CORS(app, origins=['*'])
 
 
