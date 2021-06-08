@@ -78,9 +78,20 @@ def login():
         user_dict = model_to_dict(user)
         new_auth_code = login_code(payload['cellPhone'])
         user_dict["authCode"] = new_auth_code
-        models.User.update(authCode=new_auth_code).where(models.User.cellPhone==payload['cellPhone']).execute()
+        try:
+            models.User.update(authCode=new_auth_code).where(models.User.cellPhone==payload['cellPhone']).execute()
+            return jsonify(
+                 data=user_dict,
+                 message='Successfully texted user',
+                 status=201
+             ), 201
+        except:
+            return jsonify(
+            message='User could not update',
+            status=400
+            ), 400
+    else:
         return jsonify(
-             data=user_dict,
-             message='Successfully texted user',
-             status=201
-         ), 201
+             message='Log in unsuccessful',
+             status=400
+         ), 400
