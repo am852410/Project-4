@@ -73,7 +73,7 @@ def login_code(cell_phone):
 @users.route('/login', methods=['POST'])
 def login():
     payload = request.get_json() #getting the body from frontend fetch
-    user = models.User.select().where(models.User.cellPhone==payload['cellPhone']).first() #checking the database for the User model
+    user = models.User.query.filter_by(cellPhone=payload['cellPhone']).first() #checking the database for the User model
     if user: #checking if the user was found.
         user_dict = model_to_dict(user)
         new_auth_code = login_code(payload['cellPhone'])
